@@ -4,74 +4,6 @@ const db = require('../models/database').getDatabase();
 const tables = require('../models/tables');
 const { validateStudent } = require('../models/models');
 
-/**
- * @swagger
- * definitions:
- *  Student:
- *     type: object
- *     properties:
- *      id:
- *          type: integer
- *          example: 1
- *      name:
- *          type: string
- *          example: "John Doe"
- *      total_credits:
- *          type: integer
- *          example: 21
- *      instructor_id:
- *          type: integer
- *          example: 1
- *      department_name:
- *          type: string
- *          example: Computer Science
- *  Error:
- *      type: object
- *      properties:
- *          message:
- *              type: string
- *              example: "An error occurred"
- *  Not Found:
- *      type: object
- *      properties:
- *          message:
- *              type: string
- *              example: "The requested resource could not be found"
- *  Invalid Schema:
- *      type: object
- *      properties:
- *          message:
- *              type: string
- *              example: "Resource is required"
- *  Success:
- *      type: object
- *      properties:
- *          message:
- *              type: string
- *              example: "Operation completed successfully"
- */
-
-/**
- * @swagger
- * /students:
- *  get:
- *      tags:
- *          - students
- *      description: Get all the students in the database
- *      consumes:
- *          - application/json
- *      produces:
- *          - application/json
- *      responses:
- *          200:
- *              description: An Array of all the students
- *              schema:
- *                  $ref: "#/definitions/Student"
- *          500:
- *              description: Server error
- *              schema:
- *                  $ref: "#/definitions/Error"
- */
 router.get("/", (req, res) => {
     const sqlQuery = `SELECT * FROM ${tables.tableNames.student}`;
     db.all(sqlQuery, (err, rows) => {
@@ -83,6 +15,7 @@ router.get("/", (req, res) => {
         }
         // res.send(rows);
         res.render("../views/students.ejs", { students: rows });
+        console.log(`${req.method} : ${req.url}`);
     });
 });
 
@@ -90,39 +23,7 @@ router.get("/create", function (req, res) {
     res.render("../views/createStudent.ejs");
 });
 
-/**
- * @swagger
- * /students/{id}:
- *  get:
- *      tags:
- *          - students
- *      description: Get a single student by their ID
- *      consumes:
- *          - application/json
- *      produces:
- *          - application/json
- *      parameters:
- *          - name: id
- *            description: Student's ID
- *            in: path
- *            required: true
- *            type: integer
- *      responses:
- *          200:
- *              description: The requested Student object
- *              schema:
- *                  $ref: "#/definitions/Student"
- *          404:
- *              description: Student not found
- *              schema:
- *                  $ref: "#/definitions/Not Found"
- *          500:
- *              description: Server error
- *              schema:
- *                  $ref: "#/definitions/Error"
- */
 router.get("/:id", (req, res) => {
-    const id = req.params.id;
     const sqlQuery = `SELECT * FROM ${tables.tableNames.student} WHERE ${tables.studentColumns.id} = ?`;
     db.get(sqlQuery, [req.params.id], (err, rows) => {
         if (err) {
@@ -141,37 +42,6 @@ router.get("/:id", (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /students/{id}/advisor:
- *  get:
- *      tags:
- *          - students
- *      description: Get a single student by their ID
- *      consumes:
- *          - application/json
- *      produces:
- *          - application/json
- *      parameters:
- *          - name: id
- *            description: Student's ID
- *            in: path
- *            required: true
- *            type: integer
- *      responses:
- *          200:
- *              description: The requested Student object
- *              schema:
- *                  $ref: "#/definitions/Student"
- *          404:
- *              description: Advisor not found
- *              schema:
- *                  $ref: "#/definitions/Not Found"
- *          500:
- *              description: Server error
- *              schema:
- *                  $ref: "#/definitions/Error"
- */
 router.get("/:id/advisor", (req, res) => {
     const sqlQuery = `
     SELECT * FROM ${tables.tableNames.instructor}
@@ -198,36 +68,6 @@ router.get("/:id/advisor", (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /students:
- *  post:
- *      tags:
- *          - students
- *      description: Create a new student in the database
- *      consumes:
- *          - application/json
- *      produces:
- *          - application/json
- *      parameters:
- *          - name: student
- *            description: The student to be added
- *            in: body
- *            required: true
- *            type: object
- *            schema:
- *              $ref: "#/definitions/Student"
- *      responses:
- *          200:
- *              description: Student saved successfully
- *              schema:
- *                  $ref: "#/definitions/Student"
- *          400:
- *              description: Invalid schema of the student object
- *              schema:
- *                  $ref: "#/defintions/Invalid Schema"
- */
-
 router.post("/", (req, res) => {
     const { error } = validateStudent(req.body);
     if (error) {
@@ -239,8 +79,8 @@ router.post("/", (req, res) => {
     const iname = req.body.name;
     const icreds = req.body.total_credits;
     const idept = req.body.department_name;
-    const sqlQuery = `
     
+    const sqlQuery = `
     INSERT INTO ${tables.tableNames.student}
     (name, total_credits, department_name)
     VALUES ('${iname}', ${icreds}, '${idept}')`;
@@ -255,34 +95,6 @@ router.post("/", (req, res) => {
         res.redirect("/students");
     });
 });
-
-/**
- * @swagger
- * /students/{id}:
- *  delete:
- *      tags:
- *          - students
- *      description: Delete a single student by their ID
- *      consumes:
- *          - application/json
- *      produces:
- *          - application/json
- *      parameters:
- *          - name: id
- *            description: Student's ID
- *            in: path
- *            required: true
- *            type: integer
- *      responses:
- *          200:
- *              description: Student deleted successfully
- *              schema:
- *                  $ref: "#/definitions/Success"
- *          500:
- *              description: Server error
- *              schema:
- *                  $ref: "#/definitions/Error"
- */
 
 router.delete("/:id", (req, res) => {
     const sqlQuery = `
