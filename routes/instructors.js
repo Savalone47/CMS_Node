@@ -1,6 +1,6 @@
-const router = require('express').Router();
-const tables = require('../models/tables');
-const db = require('../models/database').getDatabase();
+const router = require('express').Router(),
+     tables = require('../models/tables'),
+     db = require('../models/database').getDatabase();
 const { validateInstructor } = require('../models/models');
 
 router.get("/", (req, res) => {
@@ -132,12 +132,6 @@ router.delete("/:id", (req, res) => {
         });
     });
 });
-
-/**
- * Internal only route, not a part of the public API
- * This exists because I do not know how to make a delete request
- * from HTML.
- */
 
 router.post("/:id/delete", (req, res) => {
     const sqlQuery =

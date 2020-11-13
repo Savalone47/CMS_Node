@@ -1,6 +1,6 @@
-const router = require('express').Router();
-const tables = require('../models/tables');
-const db = require('../models/database').getDatabase();
+const router = require('express').Router(),
+      tables = require('../models/tables'),
+      db = require('../models/database').getDatabase();
 const { validateDepartment, validateTeaches } = require('../models/models');
 
 router.get("/", (req, res) => {
@@ -28,7 +28,7 @@ router.get("/create", (req, res) => {
 });
 
 router.get("/:name", (req, res) => {
-    // Adding COLLATE NOCASE makes the queries case insensitive.
+    // makes the queries case insensitive.
     const sqlQuery = `SELECT * FROM ${tables.tableNames.department} WHERE ${tables.deptColumns.deptName} = ? COLLATE NOCASE`;
     db.get(sqlQuery, [req.params.name], (err, rows) => {
         if (err) {
@@ -48,7 +48,7 @@ router.get("/:name", (req, res) => {
 });
 
 router.get("/:name/instructors", (req, res) => {
-    // Adding COLLATE NOCASE makes the queries case insensitive.
+    // makes the queries case insensitive.
     const sqlQuery = `
     SELECT * FROM ${tables.tableNames.instructor}
     WHERE ${tables.instructorColumns.department_name} = ? COLLATE NOCASE`;

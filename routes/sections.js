@@ -1,6 +1,6 @@
-const router = require('express').Router();
-const tables = require('../models/tables');
-const db = require('../models/database').getDatabase();
+const router = require('express').Router(),
+      tables = require('../models/tables'),
+      db = require('../models/database').getDatabase();
 const { validateSection } = require('../models/models');
 
 router.get("/", (req, res) => {
@@ -17,8 +17,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/create", function (req, res) {
-    res.render("../views/createSection.ejs");
+router.get("/create", (req, res) => {
+    return res.render("../views/createSection.ejs");
 });
 
 router.get("/:id", (req, res) => {
@@ -113,11 +113,6 @@ router.delete("/:id", (req, res) => {
 });
 
 
-/** 
- * Internal only route, not a part of the public API
- * This exists because I do not know how to make a delete request from HTML
- */
-
 router.post("/:id/delete", (req, res) => {
     const sqlQuery = `
     DELETE FROM ${tables.tableNames.section}
@@ -130,7 +125,7 @@ router.post("/:id/delete", (req, res) => {
                 message: "An error occurred while trying to delete this section."
             });
         }
-        res.redirect("/sections");
+        return res.redirect("/sections");
     });
 });
 

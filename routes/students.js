@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../models/database').getDatabase();
-const tables = require('../models/tables');
+const express = require('express'),
+      router = express.Router(),
+      db = require('../models/database').getDatabase(),
+      tables = require('../models/tables');
 const { validateStudent } = require('../models/models');
 
 router.get("/", (req, res) => {
@@ -19,8 +19,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/create", function (req, res) {
-    res.render("../views/createStudent.ejs");
+router.get("/create", (req, res) => {
+    return res.render("../views/createStudent.ejs");
 });
 
 router.get("/:id", (req, res) => {
